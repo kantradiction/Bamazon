@@ -31,6 +31,7 @@ function afterConnection() {
 }
 
 function whichView() {
+	console.log("\n");
 	inquirer.prompt([
 		{
 			type: "list",
@@ -50,6 +51,7 @@ function whichView() {
 }
 
 function startCustomer() {
+	console.log("\n");
 	inquirer.prompt([
 		{
 			type: "list",
@@ -65,6 +67,7 @@ function startCustomer() {
 }
 
 function startManager() {
+	console.log("\n");
 	inquirer.prompt([
 		{
 			type: "list",
@@ -74,7 +77,7 @@ function startManager() {
 		}
 	]).then(function(response) {
 		if (response.choice === "View Products for Sale") {
-			viewProductsForSale();
+			read(startManager);
 		} else if (response.choice === "View Low Inventory") {
 			viewLowInventory();
 		} else if (response.choice === "Add to Inventory") {
@@ -110,9 +113,9 @@ function read(arg) {
 			console.log("Quantity: " + res[i].stock_quantity);
 		};
 
-		if (res) {
+		return new Promise(function(resolve, reject) {
 			arg();
-		}
+		})
 
 		//to see what fields are in the response, uncomment out the next line
 		/*console.log(res);*/
@@ -197,6 +200,21 @@ function calculateTotal(id, quant) {
 			startCustomer();
 		})
 	});
+}
+
+// Manager Functions
+// =============================================================
+
+function viewLowInventory() {
+
+}
+
+function addToInventory() {
+
+}
+
+function addNewProduct() {
+
 }
 
 // What do we do once connected
