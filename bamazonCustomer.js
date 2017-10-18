@@ -18,18 +18,7 @@ var connection = mysql.createConnection({
 	database: "bamazon"
 });
 
-// What do we do once connected
-// =============================================================
-
-connection.connect(function(err) {
-	if (err) throw err;
-	console.log("connected as id " + connection.threadId);
-
-	//Immediately display items available for sale via afterConnection function
-	afterConnection();
-});
-
-// Prompts
+// Functions
 // =============================================================
 
 function afterConnection() {
@@ -73,9 +62,11 @@ function read(arg) {
 	})
 }
 
-function update() {
+function update(id, quant) {
 	console.log("UPDATE FUNCTION THROWN");
-
+	console.log("update products set stock_quantity = " + quant + " where item_id = " + id);
+	connection.query("update products set stock_quantity = " + quant + " where item_id = " + id);
+	/*read(buyItems);*/
 }
 
 function deleted() {
@@ -115,12 +106,43 @@ function buyItems() {
 
 			//get item and quantity from sql
 			var item = res[0];
-			var quantity = item.stock_quantity;
+			var dbQuantity = item.stock_quantity;
+			var rQuantity = response.quantity;
 
-			
+			//compare if user input is less than sql item quantity
+			if (dbQuantity < rQuantity) {
+				console.log("We do not have enough in stock for you to make that purchase. Please try again.")
+				buyItems();
+			} else {
+				console.log("we have that much in stock");
+				var nQuantity = dbQuantity - rQuantity;
+				update(response.id, nQuantity);
+				calculateTotal(response.id, rQuantity);
+			}
+				/*console.log(item.stock_quantity);*/
 			
 		});
-		console.log(response);
-
 	})
 }
+
+function calculateTotal(id, quant) {
+	connection.query("SELECT price from products where item_id = " + id, function(err, res) {
+		if (err) throw err; 
+
+		var item = res[0];
+		var price = res[0].price;
+		var total = price * quant;
+
+		console.log("Total price for this purchase: " + total);
+	});
+}
+
+// What do we do once connected
+// =============================================================
+connection.connect(function(err) {
+	if (err) throw err;
+	console.log("connected as id " + connection.threadId);
+
+	//Immediately display items available for sale via afterConnection function
+	afterConnection();
+});
