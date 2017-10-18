@@ -81,9 +81,9 @@ function startManager() {
 		} else if (response.choice === "View Low Inventory") {
 			viewLowInventory(startManager);
 		} else if (response.choice === "Add to Inventory") {
-			addToInventory();
+			addToInventory(startManager);
 		} else {
-			addNewProduct();
+			addNewProduct(startManager);
 		}
 	});
 }
@@ -226,8 +226,38 @@ function viewLowInventory(callback) {
 	})
 }
 
-function addToInventory() {
+function addToInventory(callback) {
+	console.log("\n");
+	//FIGURE OUT HOW TO CALL READ BEFORE INQUIRER RUNS
+	inquirer.prompt([
+		{
+			type: "input",
+			name: "id",
+			message: "ID: "
+		},
+		{
+			type: "input",
+			name: "quantity",
+			message: "Quantity: "
+		}
+	]).then(function(response) {
+		connection.query("SELECT * from products where item_id = " + response.id, function(err, res) {
+			//check if any errors
+			if (err) throw err;
 
+			//get item and quantity from sql
+			var item = res[0];
+			var dbQuantity = parseInt(item.stock_quantity);
+			var rQuantity = parseInt(response.quantity);
+
+			var nQuantity = (dbQuantity + rQuantity);
+			update(response.id, nQuantity);
+
+			return new Promise(function(resolve, reject) {
+				read(callback);
+			})
+		});
+	})
 }
 
 function addNewProduct() {
