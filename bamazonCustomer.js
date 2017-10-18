@@ -25,10 +25,12 @@ function afterConnection() {
 	console.log("WE ARE NOW CONNECTED, SCOTTY");
 
 	//Show items available for sale
-	read(buyItems);
+	/*read(buyItems);*/
 	//Prompt two questions: 
 	//1: Which id of the product would they like to buy
 	//2: How many units of the product would they like to buy
+	start();
+
 };
 
 // CRUD Functions - ReST - End
@@ -134,6 +136,25 @@ function calculateTotal(id, quant) {
 		var total = price * quant;
 
 		console.log("Total price for this purchase: " + total);
+
+		if (res) {
+			start();
+		}
+	});
+}
+
+function start() {
+	inquirer.prompt([
+		{
+			type: "list",
+			name: "choice",
+			message: "What would you like to do next?",
+			choices: ["Buy Something"]
+		}
+	]).then(function(response) {
+		if (response.choice === "Buy Something") {
+			read(buyItems);
+		}
 	});
 }
 
