@@ -22,8 +22,6 @@ var connection = mysql.createConnection({
 // =============================================================
 
 function afterConnection() {
-	console.log("WE ARE NOW CONNECTED, SCOTTY");
-
 	//Show items available for sale
 	/*read(buyItems);*/
 	//Prompt two questions: 
@@ -31,7 +29,22 @@ function afterConnection() {
 	//2: How many units of the product would they like to buy
 	start();
 
-};
+}
+
+function start() {
+	inquirer.prompt([
+		{
+			type: "list",
+			name: "choice",
+			message: "What would you like to do?",
+			choices: ["Purchase"]
+		}
+	]).then(function(response) {
+		if (response.choice === "Purchase") {
+			read(buyItems);
+		}
+	});
+}
 
 // CRUD Functions - ReST - End
 // =============================================================
@@ -65,8 +78,8 @@ function read(arg) {
 }
 
 function update(id, quant) {
-	console.log("UPDATE FUNCTION THROWN");
-	console.log("update products set stock_quantity = " + quant + " where item_id = " + id);
+	/*console.log("UPDATE FUNCTION THROWN");
+	console.log("update products set stock_quantity = " + quant + " where item_id = " + id);*/
 	connection.query("update products set stock_quantity = " + quant + " where item_id = " + id);
 	/*read(buyItems);*/
 }
@@ -87,12 +100,12 @@ function buyItems() {
 		{
 			type: "input",
 			name: "id",
-			message: "What is the ID of the product you would like to buy?"
+			message: "ID: "
 		},
 		{
 			type: "input",
 			name: "quantity",
-			message: "How many units of this product would you like to buy?"
+			message: "Quantity: "
 		}
 	]).then(function(response) {
 
@@ -113,10 +126,9 @@ function buyItems() {
 
 			//compare if user input is less than sql item quantity
 			if (dbQuantity < rQuantity) {
-				console.log("We do not have enough in stock for you to make that purchase. Please try again.")
+				console.log("Requested quantity is greater than available quantity.")
 				buyItems();
 			} else {
-				console.log("we have that much in stock");
 				var nQuantity = dbQuantity - rQuantity;
 				update(response.id, nQuantity);
 				calculateTotal(response.id, rQuantity);
@@ -137,24 +149,10 @@ function calculateTotal(id, quant) {
 
 		console.log("Total price for this purchase: " + total);
 
-		if (res) {
+		return new Promise(function(resolve, reject) {
+			console.log("Purchase completed.");
 			start();
-		}
-	});
-}
-
-function start() {
-	inquirer.prompt([
-		{
-			type: "list",
-			name: "choice",
-			message: "What would you like to do next?",
-			choices: ["Buy Something"]
-		}
-	]).then(function(response) {
-		if (response.choice === "Buy Something") {
-			read(buyItems);
-		}
+		})
 	});
 }
 
@@ -167,3 +165,4 @@ connection.connect(function(err) {
 	//Immediately display items available for sale via afterConnection function
 	afterConnection();
 });
+
