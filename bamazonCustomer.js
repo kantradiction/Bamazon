@@ -79,7 +79,7 @@ function startManager() {
 		if (response.choice === "View Products for Sale") {
 			read(startManager);
 		} else if (response.choice === "View Low Inventory") {
-			viewLowInventory();
+			viewLowInventory(startManager);
 		} else if (response.choice === "Add to Inventory") {
 			addToInventory();
 		} else {
@@ -100,7 +100,7 @@ function create() {
 }
 
 //Display all of the items available for sale, including ids, names, and prices of the products for sale
-function read(arg) {
+function read(callback) {
 	connection.query("SELECT * FROM products", function(err, res) {
 		if (err) throw err;
 		// Log all results from the SELECT statement
@@ -114,7 +114,7 @@ function read(arg) {
 		};
 
 		return new Promise(function(resolve, reject) {
-			arg();
+			callback();
 		})
 
 		//to see what fields are in the response, uncomment out the next line
@@ -205,8 +205,25 @@ function calculateTotal(id, quant) {
 // Manager Functions
 // =============================================================
 
-function viewLowInventory() {
-
+function viewLowInventory(callback) {
+	connection.query("SELECT * FROM products where stock_quantity < 5", function(err, res) {
+		if (err) throw err;
+		// Log all results from the SELECT statement
+		if (res.length < 1) {
+			console.log("\nNo Low Inventory");
+		} else {
+			for (var i = 0; i < res.length; i++) {
+				console.log("\nID: " + res[i].item_id);
+				console.log("Name: " + res[i].product_name);
+				console.log("Department: " + res[i].department_name);
+				console.log("Price: $" + res[i].price);
+				console.log("Quantity: " + res[i].stock_quantity);
+			};
+		}
+		return new Promise(function(resolve, reject) {
+			callback();
+		})
+	})
 }
 
 function addToInventory() {
