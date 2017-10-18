@@ -57,11 +57,13 @@ function startCustomer() {
 			type: "list",
 			name: "choice",
 			message: "What would you like to do?",
-			choices: ["Purchase"]
+			choices: ["Purchase", "Home"]
 		}
 	]).then(function(response) {
 		if (response.choice === "Purchase") {
 			read(buyItems);
+		} else {
+			whichView();
 		}
 	});
 }
@@ -73,7 +75,7 @@ function startManager() {
 			type: "list",
 			name: "choice",
 			message: "What would you like to do?",
-			choices: ["View Products for Sale","View Low Inventory","Add to Inventory","Add New Product"]
+			choices: ["View Products for Sale","View Low Inventory","Add to Inventory","Add New Product", "Home"]
 		}
 	]).then(function(response) {
 		if (response.choice === "View Products for Sale") {
@@ -82,8 +84,10 @@ function startManager() {
 			viewLowInventory(startManager);
 		} else if (response.choice === "Add to Inventory") {
 			addToInventory(startManager);
+		} else if (response.choice === "Add New Product") {
+			create(startManager);
 		} else {
-			addNewProduct(startManager);
+			whichView();
 		}
 	});
 }
@@ -95,8 +99,45 @@ function startAdmin() {
 // CRUD Functions - ReST - End
 // =============================================================
 
-function create() {
-	console.log("CREATE FUNCTION THROWN");
+function create(callback) {
+	console.log("\n");
+	inquirer.prompt([
+		{
+			type: "input",
+			name: "product_name",
+			message: "What is the name of the product you would like to add?",
+		},
+		{
+			type: "input",
+			name: "department_name",
+			message: "What department does this product belong in?",
+		},
+		{
+			type: "input",
+			name: "price",
+			message: "What is the sale price of this product?",
+		},
+		{
+			type: "input",
+			name: "stock_quantity",
+			message: "How much of this product do you currently have on hand?",
+		}
+	]).then(function(results) {
+		connection.query("insert into products set ?",
+			{
+				product_name: results.product_name,
+				department_name: results.department_name,
+				price: results.price,
+				stock_quantity: results.stock_quantity
+			}, function(err, res) {
+				console.log(res.affectedRows + "product added.\n");
+			}
+		);
+
+		return new Promise(function(resolve, reject) {
+			callback();
+		});
+	});
 }
 
 //Display all of the items available for sale, including ids, names, and prices of the products for sale
@@ -260,9 +301,9 @@ function addToInventory(callback) {
 	})
 }
 
-function addNewProduct() {
+/*function addNewProduct() {
 
-}
+}*/
 
 // What do we do once connected
 // =============================================================
