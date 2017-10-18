@@ -27,11 +27,29 @@ function afterConnection() {
 	//Prompt two questions: 
 	//1: Which id of the product would they like to buy
 	//2: How many units of the product would they like to buy
-	start();
-
+	whichView();
 }
 
-function start() {
+function whichView() {
+	inquirer.prompt([
+		{
+			type: "list",
+			name: "choice",
+			message: "Which view?",
+			choices: ["Customer", "Manager", "Admin"]
+		}
+	]).then(function(response) {
+		if (response.choice === "Customer") {
+			startCustomer();
+		} else if (response.choice === "Manager") {
+			startManager();
+		} else {
+			startAdmin();
+		}
+	});
+}
+
+function startCustomer() {
 	inquirer.prompt([
 		{
 			type: "list",
@@ -147,11 +165,11 @@ function calculateTotal(id, quant) {
 		var price = res[0].price;
 		var total = price * quant;
 
-		console.log("Total price for this purchase: " + total);
+		console.log("\nTotal price for this purchase: " + total);
 
 		return new Promise(function(resolve, reject) {
-			console.log("Purchase completed.");
-			start();
+			console.log("Purchase completed.\n");
+			startCustomer();
 		})
 	});
 }
