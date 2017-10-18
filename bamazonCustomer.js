@@ -64,6 +64,31 @@ function startCustomer() {
 	});
 }
 
+function startManager() {
+	inquirer.prompt([
+		{
+			type: "list",
+			name: "choice",
+			message: "What would you like to do?",
+			choices: ["View Products for Sale","View Low Inventory","Add to Inventory","Add New Product"]
+		}
+	]).then(function(response) {
+		if (response.choice === "View Products for Sale") {
+			viewProductsForSale();
+		} else if (response.choice === "View Low Inventory") {
+			viewLowInventory();
+		} else if (response.choice === "Add to Inventory") {
+			addToInventory();
+		} else {
+			addNewProduct();
+		}
+	});
+}
+
+function startAdmin() {
+
+}
+
 // CRUD Functions - ReST - End
 // =============================================================
 
