@@ -37,16 +37,18 @@ function whichView() {
 			type: "list",
 			name: "choice",
 			message: "Which view?",
-			choices: ["Customer", "Manager", "Admin"]
+			choices: ["Customer", "Manager", "End"/*, "Admin"*/]
 		}
 	]).then(function(response) {
 		if (response.choice === "Customer") {
 			startCustomer();
 		} else if (response.choice === "Manager") {
 			startManager();
-		} else {
+		} else if (response.choice === "End") {
+			connection.end();
+		} /*else {
 			startAdmin();
-		}
+		}*/
 	});
 }
 
@@ -92,9 +94,9 @@ function startManager() {
 	});
 }
 
-function startAdmin() {
+/*function startAdmin() {
 
-}
+}*/
 
 // CRUD Functions - ReST - End
 // =============================================================
@@ -300,10 +302,6 @@ function addToInventory(callback) {
 		});
 	})
 }
-
-/*function addNewProduct() {
-
-}*/
 
 // What do we do once connected
 // =============================================================
