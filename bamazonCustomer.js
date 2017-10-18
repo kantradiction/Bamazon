@@ -51,7 +51,6 @@ function create() {
 
 //Display all of the items available for sale, including ids, names, and prices of the products for sale
 function read(arg) {
-	console.log("READ FUNCTION THROWN");
 	connection.query("SELECT * FROM products", function(err, res) {
 		if (err) throw err;
 		// Log all results from the SELECT statement
@@ -90,6 +89,7 @@ function end() {
 }
 
 function buyItems() {
+	console.log("\n");
 	inquirer.prompt([
 		{
 			type: "input",
@@ -105,9 +105,21 @@ function buyItems() {
 
 		//Complete the order
 		//Check if the store has enough of the product to meet the customer's request
+		//Do a sql search of the id and get the quantity of the product.
 		//If false, the app should phrase "insufficient quantity!" and then prevent the order from going through
 		//If true, the app should fulfill the order and update the sequel database, then show the customer
 		// the total cost of their purchase
+		connection.query("SELECT * from products where item_id = " + response.id, function(err, res) {
+			//check if any errors
+			if (err) throw err;
+
+			//get item and quantity from sql
+			var item = res[0];
+			var quantity = item.stock_quantity;
+
+			
+			
+		});
 		console.log(response);
 
 	})
